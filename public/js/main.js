@@ -1,6 +1,7 @@
 (function(){
    var input = document.getElementsByName( 'input' )[0];
    var output = document.getElementsByName( 'output' )[0];
+   var status = document.querySelector( 'div.status' );
    
    var connection;
    var ws_location = 'ws://127.0.0.1:1337';           // WebSocket server address
@@ -12,6 +13,9 @@
       clearInterval( interval );
       
       connection.addEventListener( 'open', function () {
+         status.innerText = 'Connected';
+         status.classList.remove( 'disconnected' );
+         status.classList.add( 'connected' );
          input.addEventListener( 'keypress', sendCharacter );
       });
       
@@ -34,6 +38,10 @@
       
       // Add listener for WebSocket exit
       connection.addEventListener( 'close', function ( connection ) {
+         status.innerText = 'Disconnected';
+         status.classList.remove( 'connected' );
+         status.classList.add( 'disconnected' );
+         
          input.removeEventListener( 'keypress', sendCharacter );
          
          // Try to reconnect
