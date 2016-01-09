@@ -2,8 +2,9 @@ var express = require('express');
 var app = express();
 var WebSocketServer = require('ws').Server;
 
-// String with all entered characters
-var string = '';
+// Array with all entered characters
+var history = [];
+var matches = [ 'white', 'red', 'grey', 'blue', 'pink' ];
 
 app.use( express.static( __dirname + '/public' ) );
 
@@ -18,26 +19,51 @@ var wss = new WebSocketServer({
 wss.on( 'connection', function ( ws ) {
    
    var data = {
-      string : string,
-      cmd    : {
-         background : 'grey'
-      }
+      string : generateMessage( history ),
+      cmd    : null
    };
    
    // Send the current string on every new connection
-   if ( string.length ) {
+   if ( history.length ) {
       ws.send( JSON.stringify( data ) );
    }
    
    ws.on( 'message', function ( message ) {
-      string += message;
+      history.push({
+         timestamp : Date.now(),
+         char      : message
+      });
       
       // Make check for 'red', 'white' ...
+      var last = getLastTenMinutes( history );
+      var color = checkString( last );
       
-      data.string = string;
+      data.cmd = {
+         background : color
+      };
+      
+      data.string = generateMessage( history );
       
       wss.clients.forEach( function ( client ) {
          client.send( JSON.stringify( data ) );
       });
    });
 });
+
+function generateMessage ( array ) {
+   return array.map( message => message.char ).join('');         // ES6 style :)
+}
+
+function getLastTenMinutes ( array ) {
+   return generateMessage( array.filter( function ( elem ) {
+      return elem.timestamp >= Date.now() - 600000;
+   }));
+}
+
+function checkString ( string ) {
+   for ( var i = 0; i < matches.length; i++ ) {
+      if ( string.endsWith( matches[ i ] ) ) {
+         return matches[ i ];
+      }
+   }
+}
