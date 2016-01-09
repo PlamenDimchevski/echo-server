@@ -4,7 +4,7 @@ var WebSocketServer = require('ws').Server;
 
 // Array with all entered characters
 var history = [];
-var matches = [ 'white', 'red', 'grey', 'blue', 'pink' ];
+var colors = [ 'white', 'red', 'grey', 'blue', 'pink', 'green' ];
 
 app.use( express.static( __dirname + '/public' ) );
 
@@ -55,15 +55,17 @@ function generateMessage ( array ) {
 }
 
 function getLastTenMinutes ( array ) {
-   return generateMessage( array.filter( function ( elem ) {
-      return elem.timestamp >= Date.now() - 600000;
-   }));
+   return generateMessage(
+         array.filter(
+               elem => ( elem.timestamp >= Date.now() - 600000 )
+         )
+   );
 }
 
 function checkString ( string ) {
-   for ( var i = 0; i < matches.length; i++ ) {
-      if ( string.endsWith( matches[ i ] ) ) {
-         return matches[ i ];
+   for ( var i = 0; i < colors.length; i++ ) {
+      if ( string.endsWith( colors[ i ] ) ) {
+         return colors[ i ];
       }
    }
 }
