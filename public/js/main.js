@@ -1,61 +1,71 @@
 (function(){
-   var input = document.getElementsByName( 'input' )[0];
-   var output = document.getElementsByName( 'output' )[0];
-   var status = document.querySelector( 'div.status' );
    
-   var connection;
-   var ws_location = 'ws://127.0.0.1:1337';           // WebSocket server address
-   var interval;
-   var period = 3000;
-   
-   function initWebSocket ( ws_location ) {
-      connection = new WebSocket( ws_location );
-      clearInterval( interval );
+   function EchoServer ( ws_location ) {
+      this.input = document.getElementsByName( 'input' )[0];
+      this.output = document.getElementsByName( 'output' )[0];
+      this.status = document.querySelector( 'div.status' );
       
-      connection.addEventListener( 'open', function () {
-         status.innerText = 'Connected';
-         status.classList.remove( 'disconnected' );
-         status.classList.add( 'connected' );
-         input.addEventListener( 'keypress', sendCharacter );
-      });
+      this.connection = null;
+      this.ws_location = ws_location;           // WebSocket server address
+      this.interval;
+      this.period = 3000;
       
-      
-      connection.addEventListener( 'message', function ( message ) {
-         // Parse the received 'message' object
-         message = JSON.parse( message.data );
-         
-         // Resize the output input field if the message is bigger than it
-         if ( output.size <= message.string.length ) {
-            output.size = message.string.length;
-         }
-         
-         output.value = message.string;
-         
-         if ( message.cmd ) {
-            document.body.style.background   = message.cmd.background;
-         }
-      });
-      
-      // Add listener for WebSocket exit
-      connection.addEventListener( 'close', function ( connection ) {
-         status.innerText = 'Disconnected';
-         status.classList.remove( 'connected' );
-         status.classList.add( 'disconnected' );
-         
-         input.removeEventListener( 'keypress', sendCharacter );
-         
-         // Try to reconnect
-         interval = setInterval( function () {
-            initWebSocket( connection.target.url );
-         }, period );
-      });
+      this.callbacks = {
+         sendToServer : this.sendToServer.bind( this )
+      };
    };
    
-   initWebSocket( ws_location );
+   EchoServer.prototype = {
+      
+      init : function () {
+         this.connection = new WebSocket( this.ws_location );
+         clearInterval( this.interval );
+         
+         this.connection.addEventListener( 'open', function () {
+            this.status.innerText = 'Connected';
+            this.status.classList.remove( 'disconnected' );
+            this.status.classList.add( 'connected' );
+            this.input.addEventListener( 'keypress', this.callbacks.sendToServer );
+         }.bind( this ));
+         
+         this.connection.addEventListener( 'message', function ( message ) {
+            // Parse the received 'message' object
+            message = JSON.parse( message.data );
+            
+            // Resize the output input field if the message is bigger than it
+            if ( this.output.size <= message.string.length ) {
+               this.output.size = message.string.length;
+            }
+            
+            this.output.value = message.string;
+            
+            if ( message.cmd ) {
+               document.body.style.background   = message.cmd.background;
+            }
+         }.bind( this ));
+         
+         // Add listener for WebSocket exit
+         this.connection.addEventListener( 'close', function ( connection ) {
+            this.status.innerText = 'Disconnected';
+            this.status.classList.remove( 'connected' );
+            this.status.classList.add( 'disconnected' );
+            
+            this.input.removeEventListener( 'keypress', this.callbacks.sendToServer );
+            
+            // Try to reconnect
+            this.interval = setInterval( function () {
+               this.init( connection.target.url );
+            }.bind( this ), this.period );
+         }.bind( this ));
+      },
+      
+      sendToServer : function ( event ) {
+         // Send to the WebSocket server the entered character
+         this.connection.send( String.fromCharCode( event.keyCode ) );
+         this.input.value = '';
+      }
+   };
    
-   function sendCharacter ( event ) {
-      // Send to the WebSocket server the entered character
-      connection.send( String.fromCharCode( event.keyCode ) );
-      this.value = '';
-   }
+   window.EchoServer = new EchoServer( 'ws://127.0.0.1:1337' );
+   
 })();
