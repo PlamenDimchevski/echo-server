@@ -6,7 +6,7 @@ function EchoServer ( options ) {
    this.wss     = new WebSocketServer( options );                         // Initialize WebSocket.Server
    
    this.full_message = '';                                                // Store the full message string
-   this.last_10mins  = '';                                                // Store the last ten minutes message string
+   this.last_10secs  = '';                                                // Store the last ten minutes message string
    
    this.wss.on( 'connection', this.initConnection.bind( this ) );
 }
@@ -33,7 +33,7 @@ EchoServer.prototype = {
       });
       
       this.full_message = this.generateMessage();
-      this.getLast10Mins();
+      this.getLast10Secs();
       
       var data = {
          string : this.full_message,
@@ -48,21 +48,24 @@ EchoServer.prototype = {
       });
    },
    
-   generateMessage : function () {
-      return this.history.map( message => message.char ).join('');    // ES6 style yeah
+   generateMessage : function ( array ) {
+      array = array || this.history;
+      return array.map( message => message.char ).join('');    // ES6 style yeah
    },
    
-   getLast10Mins : function () {
-      this.last_10mins = this.generateMessage(
+   getLast10Secs : function () {
+      // Get only the characters that has been enetered in the last 10 seconds
+      // and generate string from them
+      this.last_10secs = this.generateMessage(
             this.history.filter(
-                  elem => ( elem.timestamp >= Date.now() - 600000 )
+                  elem => ( elem.timestamp >= Date.now() - 10000 )
             )
       );
    },
    
    checkColor : function () {
       for ( var i = 0; i < this.colors.length; i++ ) {
-         if ( this.last_10mins.endsWith( this.colors[ i ] ) ) {
+         if ( this.last_10secs.endsWith( this.colors[ i ] ) ) {
             return this.colors[ i ];
          }
       }
