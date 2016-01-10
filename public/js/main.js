@@ -81,6 +81,7 @@
          this.status.classList.remove( 'connected' );
          this.status.classList.add( 'disconnected' );
          this.input.removeEventListener( 'keypress', this.callbacks.sendToServer );
+         window.removeEventListener( 'beforeunload', this.callbacks.closeConnection );
          
          // Disable the input field
          this.input.disabled = true;
