@@ -40,6 +40,10 @@
          this.status.classList.remove( 'disconnected' );
          this.status.classList.add( 'connected' );
          this.input.addEventListener( 'keypress', this.callbacks.sendToServer );
+         
+         // Enable the input field
+         this.input.disabled = false;
+         this.input.focus();
       },
       
       // Executes on every new message received from the server
@@ -67,6 +71,9 @@
          this.status.classList.remove( 'connected' );
          this.status.classList.add( 'disconnected' );
          this.input.removeEventListener( 'keypress', this.callbacks.sendToServer );
+         
+         // Disable the input field
+         this.input.disabled = true;
          
          // Try to reconnect
          this.interval = setInterval( this.init.bind( this ), this.period );
