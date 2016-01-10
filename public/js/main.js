@@ -57,7 +57,8 @@
          }
          
          // Set the message as output field value
-         this.output.value = message.string;
+         // Conver the value `toString` because Safari
+         this.output.value = message.string.toString();
          
          // Check for a received command
          if ( message.cmd ) {
