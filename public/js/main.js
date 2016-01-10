@@ -1,6 +1,6 @@
 (function () {
    
-   function EchoServer ( ws_location ) {
+   function EchoConnection ( ws_location ) {
       
       /*------------- DOM Elements references --------------------------------*/
       this.input  = document.getElementsByName( 'input' )[0];
@@ -20,7 +20,7 @@
       };
    };
    
-   EchoServer.prototype = {
+   EchoConnection.prototype = {
       
       init : function () {
          // Open WebSocket connection
@@ -34,6 +34,8 @@
       },
       
       onOpen : function () {
+         this.resetFields();
+         
          this.status.innerText = 'Connected';
          this.status.classList.remove( 'disconnected' );
          this.status.classList.add( 'connected' );
@@ -70,9 +72,14 @@
          // Send to the WebSocket server the entered character
          this.connection.send( String.fromCharCode( event.keyCode ) );
          this.input.value = '';
+      },
+      
+      resetFields : function () {
+         this.input.value = '';
+         this.output.value = '';
       }
    };
    
-   window.EchoServer = new EchoServer( 'ws://127.0.0.1:1337' );
+   window.EchoConnection = new EchoConnection( 'ws://127.0.0.1:1337' );
    
 })();
