@@ -1,4 +1,4 @@
-# echo-server
+# echo-server 1.0.1
 Simple NodeJS Echo server
 
 ## Installation

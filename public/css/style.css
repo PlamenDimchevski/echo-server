@@ -7,7 +7,12 @@ input {
    padding: 5px;
 }
 
-div.status {
+#main-container,
+#alert-box {
+   display: none;
+}
+
+div#status {
    position: absolute;
    top: 20px;
    right: 10px;
@@ -15,10 +20,21 @@ div.status {
    font-weight: bold;
 }
 
-.status.connected {
+#status.connected {
    background-color: green;
 }
 
-.status.disconnected {
+#status.disconnected {
    background-color: red;
+}
+
+#alert-box {
+   width: 800px;
+   margin: 0 auto;
+   padding: 10px;
+   border: 1px solid #000;
+   background-color: red;
+   text-align: center;
+   color: #fff;
+   font-weight: bold;
 }

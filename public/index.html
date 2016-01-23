@@ -6,12 +6,16 @@
    <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 <body>
-   <label>Input: <input type="text" name="input"  disabled="disabled"></label><br/>
-   <label>Output: <input type="text" name="output" disabled="disabled"></label>
-   <div class="status disconnected">Disconneted</div>
+   <div id="main-container">
+      <label>Input: <input type="text" name="input" id="input" disabled="disabled"></label><br/>
+      <label>Output: <input type="text" name="output" id="output" disabled="disabled"></label>
+      <div id="status" class="disconnected">Disconneted</div>
+   </div>
+   <div id="alert-box"></div>
    <script type="text/javascript" src="js/main.js"></script>
    <script type="text/javascript">
-      EchoConnection.init();
+      new EchoConnection();
    </script>
+   <noscript></noscript>
 </body>
 </html>
