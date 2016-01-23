@@ -1,19 +1,39 @@
 body {
    font-family: Verdana, sans-serif;
    font-size: 14px;
+   margin: 0;
 }
 
-input {
+input, div#output {
    padding: 5px;
+   border: 1px solid #ccc;
+   font: 12px Verdana, sans-serif;
 }
 
 noscript {
    display: block;
 }
 
+div#output {
+   display: inline-block;
+   min-width: 200px;
+   min-height: 15px;
+   background-color: #fff;
+}
+
 #main-container,
 #alert-box {
    display: none;
+}
+
+#main-container {
+   margin: 10px 0 0 10px;
+}
+
+#main-container > div {
+   display: flex;
+   align-items: center;
+   margin-bottom: 10px;
 }
 
 div#status {

@@ -7,12 +7,17 @@
 </head>
 <body>
    <div id="main-container">
-      <label>Input: <input type="text" name="input" id="input" disabled="disabled"></label><br/>
-      <label>Output: <input type="text" name="output" id="output" disabled="disabled"></label>
+      <div>
+         <label>Input:&nbsp;<input type="text" name="input" id="input" disabled="disabled"></label>
+      </div>
+      <div>
+         <label>Output:&nbsp;</label>
+         <div id="output"></div>
+      </div>
       <div id="status" class="disconnected">Disconneted</div>
    </div>
    <div id="alert-box"></div>
-   <script type="text/javascript" src="js/main.js"></script>
+   <script type="text/javascript" src="js/echo_connection.js"></script>
    <script type="text/javascript">
       new EchoConnection();
    </script>

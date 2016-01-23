@@ -101,18 +101,13 @@ window.EchoConnection = (function () {
          console.error( e.message );
       }
       
-      // Resize the output input field if the message is bigger than it
-      if ( this.output.size <= message.string.length ) {
-         this.output.size = message.string.length;
-      }
-      
       // Set the message as output field value
       // Parse the value `toString` because Safari
-      this.output.value = message.string.toString();
+      this.output.innerHTML = message.string.toString();
       
       // Check for a received command
       if ( message.cmd ) {
-         document.body.style.background   = message.cmd.background;
+         document.body.style.background = message.cmd.background;
       }
    }
    
