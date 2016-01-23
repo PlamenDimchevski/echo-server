@@ -1,5 +1,4 @@
 var WebSocketServer = require('ws').Server;
-var colors  = require( './libs/colors' ) ;                                // Array with all posiible background colors
 
 function EchoServer ( options ) {
    this.history = [];                                                     // Array with all entered characters
@@ -7,6 +6,13 @@ function EchoServer ( options ) {
    
    this.full_message = '';                                                // Store the full message string
    this.last_10secs  = '';                                                // Store the last ten minutes message string
+   
+   this.color_regex = new RegExp(
+      '#(?:[a-f\d]{6}|[a-f\d]{3})|' +
+      'rgb\((?:(?:\s*\d+\s*,){2}\s*\d+|(?:\s*\d+(?:\.\d+)?%\s*,){2}\s*\d+(?:\.\d+)?%)\s*\)|' +
+      'rgba\((?:(?:\s*\d+\s*,){3}|(?:\s*\d+(?:\.\d+)?%\s*,){3})\s*\d+(?:\.\d+)?\s*\)|' +
+      'transparent|aliceblue|antiquewhite|aquamarine|aqua|azure|beige|bisque|black|blanchedalmond|blueviolet|blue|brown|burlywood5|cadetblue|chartreuse|chocolate|coral|cornflowerblue|cornsilk|crimson|cyan|darkblue|darkcyan|darkgoldenrod|darkgray|darkgreen|darkgrey|darkkhaki|darkmagenta|darkolivegreen|darkorange|darkorchid|darkred|darksalmon|darkseagreen|darkslateblue|darkslategray|darkslategrey|darkturquoise|darkviolet|deeppink|deepskyblue|dimgray|dimgrey|dodgerblue|firebrick|floralwhite|forestgreen|fuchsia|gainsboro|ghostwhite|goldenrod|gold|gray|greenyellow|green|grey|honeydew|hotpink|indianred|indigo|ivory|khaki|lavender|lavenderblush|lawngreen|lemonchiffon|lightblue|lightcoral|lightcyan|lightgoldenrodyellow|lightgray|lightgreen|lightgrey|lightpink|lightsalmon|lightseagreen|lightskyblue|lightslategray|lightslategrey|lightsteelblue|lightyellow|limegreen|lime|linen|magenta|maroon|mediumaquamarine|mediumblue|mediumorchid|mediumpurple|mediumseagreen|mediumslateblue|mediumspringgreen|mediumturquoise|mediumvioletred|midnightblue|mintcream|mistyrose|moccasin|navajowhite|navy|oldlace|olivedrab|olive|orangered|orange|orchid|palegoldenrod|palegreen|paleturquoise|palevioletred|papayawhip|peachpuff|peru|pink|plum|powderblue|purple|red|rosybrown|royalblue|saddlebrown|salmon|sandybrown|seagreen|seashell|sienna|silver|skyblue|slateblue|slategray|slategrey|snow|springgreen|steelblue|tan|teal|thistle|tomato|turquoise|violet|wheat|whitesmoke|white|yellowgreen|yellow',
+   'gi' );
    
    this.wss.on( 'connection', this.initConnection.bind( this ) );
 }
@@ -64,11 +70,8 @@ EchoServer.prototype = {
    },
    
    checkColor : function () {
-      for ( var i = 0; i < colors.length; i++ ) {
-         if ( this.last_10secs.endsWith( colors[ i ].toLowerCase() ) ) {
-            return colors[ i ];
-         }
-      }
+      var match = this.last_10secs.match( this.color_regex );
+      return match ? match.pop() : null;
    }
 };
 
