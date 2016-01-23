@@ -12,6 +12,8 @@ function EchoServer ( options ) {
 }
 
 EchoServer.prototype = {
+   
+   // Initialize a new client connection
    initConnection : function ( ws ) {
       var data = {
          string : this.full_message,
@@ -26,6 +28,8 @@ EchoServer.prototype = {
       ws.on( 'message', this.onMessage.bind( this ) );
    },
    
+   // Handles the WebSockets 'message' event.
+   // Executes when a new message from the client is received.
    onMessage : function ( message ) {
       this.history.push({
          timestamp : Date.now(),
@@ -48,11 +52,13 @@ EchoServer.prototype = {
       });
    },
    
+   // Returns a string with all entered characters at this time
    generateMessage : function ( array ) {
       array = array || this.history;
       return array.map( message => message.char ).join('');    // ES6 style yeah
    },
    
+   // Return a string that contains the entered in the last 10 seconds characters
    getLast10Secs : function () {
       // Get only the characters that has been enetered in the last 10 seconds
       // and generate string from them
@@ -63,6 +69,8 @@ EchoServer.prototype = {
       );
    },
    
+   // Check if the characters entered in the last 10 seconds contains a valid
+   // color name, color HEX value or color rgb(a) value
    checkColor : function () {
       var match = this.last_10secs.match( this.color_regex );
       return match ? match.pop() : null;

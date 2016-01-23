@@ -20,6 +20,7 @@ window.EchoConnection = (function () {
       init.call( this );
    }
    
+   // Initialize the WebSocket connection
    function init () {
       // Check if the browser supports WebSockets
       if ( ! 'WebSocket' in window ) {
@@ -42,6 +43,7 @@ window.EchoConnection = (function () {
       initEvents.call( this );
    }
    
+   // Initialize callback functions
    function initCallbacks () {
       callbacks = {
          open            : open.bind( this ),
@@ -52,6 +54,7 @@ window.EchoConnection = (function () {
       }
    }
    
+   // Initialize all needed events
    function initEvents () {
       // Add WebSocket event listeners
       this.connection.addEventListener( 'open', callbacks.open );
