@@ -1,8 +1,8 @@
 var WebSocketServer = require('ws').Server;
+var colors  = require( './libs/colors' ) ;                                // Array with all posiible background colors
 
 function EchoServer ( options ) {
    this.history = [];                                                     // Array with all entered characters
-   this.colors  = [ 'white', 'red', 'grey', 'blue', 'pink', 'green' ];    // Array with all posiible background colors
    this.wss     = new WebSocketServer( options );                         // Initialize WebSocket.Server
    
    this.full_message = '';                                                // Store the full message string
@@ -64,9 +64,9 @@ EchoServer.prototype = {
    },
    
    checkColor : function () {
-      for ( var i = 0; i < this.colors.length; i++ ) {
-         if ( this.last_10secs.endsWith( this.colors[ i ] ) ) {
-            return this.colors[ i ];
+      for ( var i = 0; i < colors.length; i++ ) {
+         if ( this.last_10secs.endsWith( colors[ i ].toLowerCase() ) ) {
+            return colors[ i ];
          }
       }
    }
