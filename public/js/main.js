@@ -1,5 +1,7 @@
 window.EchoConnection = (function () {
    
+   var callbacks;
+   
    function EchoConnection ( ws_location ) {
       
       /*------------- DOM Elements references --------------------------------*/
@@ -15,16 +17,8 @@ window.EchoConnection = (function () {
       this.period      = 3000;                                     // The time on which the client would try to connect
                                                                    // to the server when the connection is down
       
-      this.callbacks   = {
-         open            : open.bind( this ),
-         close           : close.bind( this ),
-         receiveMessage  : receiveMessage.bind( this ),
-         sendMessage     : sendMessage.bind( this ),
-         closeConnection : closeConnection.bind( this )
-      };
-      
       init.call( this );
-   };
+   }
    
    function init () {
       // Check if the browser supports WebSockets
@@ -34,24 +28,39 @@ window.EchoConnection = (function () {
          return;
       }
       
+      try {
+         // Open WebSocket connection
+         this.connection = new WebSocket( this.ws_location );
+      } catch ( e ) {
+         console.log( e.message );
+      }
+      
+      clearInterval( this.interval );
       this.container.style.display = 'block';
       
-      // Open WebSocket connection
-      this.connection = new WebSocket( this.ws_location );
-      clearInterval( this.interval );
-      
+      initCallbacks.call( this );
       initEvents.call( this );
+   }
+   
+   function initCallbacks () {
+      callbacks = {
+         open            : open.bind( this ),
+         close           : close.bind( this ),
+         receiveMessage  : receiveMessage.bind( this ),
+         sendMessage     : sendMessage.bind( this ),
+         closeConnection : closeConnection.bind( this )
+      }
    }
    
    function initEvents () {
       // Add WebSocket event listeners
-      this.connection.addEventListener( 'open', this.callbacks.open );
-      this.connection.addEventListener( 'close', this.callbacks.close );
-      this.connection.addEventListener( 'message', this.callbacks.receiveMessage );
+      this.connection.addEventListener( 'open', callbacks.open );
+      this.connection.addEventListener( 'close', callbacks.close );
+      this.connection.addEventListener( 'message', callbacks.receiveMessage );
       
       // Close the WebSocket connection on window unload because Firefox
       // https://bugzilla.mozilla.org/show_bug.cgi?id=712329
-      window.addEventListener( 'beforeunload', this.callbacks.closeConnection );
+      window.addEventListener( 'beforeunload', callbacks.closeConnection );
    }
    
    // Executes when we are connected successfully to the server
@@ -61,7 +70,7 @@ window.EchoConnection = (function () {
       this.status.innerHTML = 'Connected';
       this.status.classList.remove( 'disconnected' );
       this.status.classList.add( 'connected' );
-      this.input.addEventListener( 'keypress', this.callbacks.sendMessage );
+      this.input.addEventListener( 'keypress', callbacks.sendMessage );
       
       // Enable the input field
       this.input.disabled = false;
@@ -73,8 +82,8 @@ window.EchoConnection = (function () {
       this.status.innerHTML = 'Disconnected';
       this.status.classList.remove( 'connected' );
       this.status.classList.add( 'disconnected' );
-      this.input.removeEventListener( 'keypress', this.callbacks.sendMessage );
-      window.removeEventListener( 'beforeunload', this.callbacks.closeConnection );
+      this.input.removeEventListener( 'keypress', callbacks.sendMessage );
+      window.removeEventListener( 'beforeunload', callbacks.closeConnection );
       
       // Disable the input field
       this.input.disabled = true;
@@ -85,8 +94,12 @@ window.EchoConnection = (function () {
    
    // Executes on every new message received from the server
    function receiveMessage ( message ) {
-      // Parse the received 'message' object
-      message = JSON.parse( message.data );
+      try {
+         // Parse the received 'message' object
+         message = JSON.parse( message.data );
+      } catch ( e ) {
+         console.error( e.message );
+      }
       
       // Resize the output input field if the message is bigger than it
       if ( this.output.size <= message.string.length ) {
@@ -124,7 +137,11 @@ window.EchoConnection = (function () {
       this.connection.close();
    }
    
-   EchoConnection.prototype = {};
+   EchoConnection.prototype = {
+      getWebSocketAddress : function () {
+         return this.ws_location;
+      }
+   };
    
    return EchoConnection;
    
