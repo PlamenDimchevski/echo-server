@@ -7,6 +7,10 @@ input {
    padding: 5px;
 }
 
+noscript {
+   display: block;
+}
+
 #main-container,
 #alert-box {
    display: none;
@@ -28,7 +32,8 @@ div#status {
    background-color: red;
 }
 
-#alert-box {
+#alert-box,
+noscript {
    width: 800px;
    margin: 0 auto;
    padding: 10px;
